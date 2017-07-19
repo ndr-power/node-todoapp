@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>TODO App</title>
+</head>
+<body>
+    <h1>TODO App</h1>
+    <div>
+        <label for="add_input">Add todo</label>
+        <input type="text" id="add_input"> <button id="add_todo">Add</button>
+    </div>
+    <ul id="todos">
+        <% for(let i = 0; i<data.data.length; i++){ %>
+            <li id=<%= i %>><button>Delete</button> <input type="checkbox" <%  if(data.data[i].checked == 1) {%> checked <% } %>><%= data.data[i].name %> </li>
+        <% } %>
+    </ul>
+    <script
+  src="https://code.jquery.com/jquery-3.2.1.min.js"
+  integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+  crossorigin="anonymous"></script>
+  <script>
+        $('li>button')
+    .click(function () {
+        var id = $(this)
+            .parent()
+            .attr('id');
+        var that = this;
+        $.ajax({
+            url: "/deleteTodo/" + id,
+            success: function (data) {
+                console.log(data);
+                $(that)
+                    .parent()
+                    .remove();
+            }
+        });
+    });
+$('li>input')
+    .change(function () {
+        var id = $(this)
+            .parent()
+            .attr('id');
+        var checked = this.checked ? 1 : 0;
+        $.ajax({
+            url: "/toggle/" + id + "/" + checked,
+            success: function (data) {
+                if (data.err) {
+                    alert(data.err);
+                }
+            }
+        });
+    });
+$('#add_todo')
+    .click(function () {
+        var input_val = $("#add_input")
+            .val();
+        if (input_val) {
+            $.ajax({
+                url: "/addTodo/" + input_val,
+                success: function (data) {
+                    console.log(data)
+                    $("ul")
+                        .append('<li id="' + data.index + '"><button>Delete</button> <input type="checkbox">' + input_val + '</li>')
+                    // Костыль
+                    $('li>button')
+                        .click(function () {
+                            var id = $(this)
+                                .parent()
+                                .attr('id');
+                            var that = this;
+                            $.ajax({
+                                url: "/deleteTodo/" + id,
+                                success: function (data) {
+                                    console.log(data);
+                                    $(that)
+                                        .parent()
+                                        .remove();
+                                }
+                            });
+                        });
+                    // Костыль #2
+                    $('li>input')
+                        .change(function () {
+                            var id = $(this)
+                                .parent()
+                                .attr('id');
+                            var checked = this.checked ? 1 : 0;
+                            $.ajax({
+                                url: "/toggle/" + id + "/" + checked,
+                                success: function (data) {
+                                    if (data.err) {
+                                        alert(data.err);
+                                    }
+                                }
+                            });
+                        });
+                }
+            });
+        } else {
+            alert('Input is empty')
+        }
+    });
+  </script>
+</body>
+</html>
