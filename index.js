@@ -7,7 +7,7 @@ const port = 3000;
 app.set('views', __dirname + '/views');
 app.set('view engine', 'ejs');
 app.get('/', (req, res) => {
-    let returnData = renderTodos().catch(e){res.json({success: false, error: e});
+    let returnData = renderTodos().catch(e => {res.json({success: false, error: e})});
     res.render('index', {data: returnData});
 });
 
