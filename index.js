@@ -7,14 +7,19 @@ const port = 3000;
 app.set('views', __dirname + '/views');
 app.set('view engine', 'ejs');
 app.get('/', (req, res) => {
-    let returnData = renderTodos().catch(e => {res.json({success: false, error: e})});
-    res.render('index', {data: returnData});
+    renderTodos()
+    .then(data => {
+        res.render('index', {data: data});
+    })
+    .catch(e => {res.json({success: false, error: e})});
 });
 
 app.get('/addTodo/:text', (req, res) => {
     if (req.params.text) {
-        let returnData = manageTodos('add', req.params.text, res);
-        res.json(returnData);
+        manageTodos('add', req.params.text)
+            .then(data => {
+                res.json(data);
+            });
     } else {
         res.json({
             success: false,
@@ -24,8 +29,10 @@ app.get('/addTodo/:text', (req, res) => {
 });
 app.get('/deleteTodo/:id', (req, res) => {
     if (req.params.id) {
-        let returnData = manageTodos('delete', req.params.id, res);
-        res.json(returnData);
+        manageTodos('delete', req.params.id)
+        .then(data => {
+                    res.json(data);
+        })
     } else {
         res.json({
             success: false,
@@ -35,8 +42,10 @@ app.get('/deleteTodo/:id', (req, res) => {
 });
 app.get('/toggle/:id/:state', (req, res) => {
     if (req.params.id && req.params.state) {
-        let returnData = manageTodos('toggle', [req.params.id, req.params.state]);
-        res.json(returnData);
+         manageTodos('toggle', [req.params.id, req.params.state])
+         .then(data => {
+        res.json(data);
+         })
     } else {
         res.json({
             success: false,
@@ -54,15 +63,16 @@ async function renderTodos(res) {
 }
 
 async function manageTodos(_type, _param) {
-    try {
         let data = await readFile('./data/todos.json');
         data = JSON.parse(data);
+                console.log(data);
+
         switch (_type) {
             case 'add':
                data = addTodo(data, _param);
                 break;
             case 'delete':
-                data = deleteTodo(data, _params);
+                data = deleteTodo(data, _param);
                 break;
             case 'toggle':
                 data = toggleTodo(data, _param);
@@ -70,27 +80,26 @@ async function manageTodos(_type, _param) {
         }
 
         await writeFile('./data/todos.json', JSON.stringify(data))
-
         return {
             success: true,
             index: data.data.length
         };
-    } catch (e) {
-        return {
-            success: false,
-            error: e
-        };
-    }
+   
 }
 function addTodo(_data, _param){
-    return data.data.push({
+    _data.data.push({
                     name: _param,
                     checked: 0
                 });
+    return _data;
 }
 function deleteTodo(_data, _param){
-    return data.data.splice(_param, 1);
+     _data.data.splice(_param, 1);
+        return _data;
+
 }
 function toggleTodo(_data, _param){
-    return data.data[_param[0]].checked = _param[1];
-}
+     _data.data[_param[0]].checked = _param[1];
+    return _data;
+
+    }
