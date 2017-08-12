@@ -20,6 +20,7 @@ app.get('/addTodo/:text', (req, res) => {
             .then(data => {
                 res.json(data);
             });
+            .catch(e => {res.json({success: false, error: e})});
     } else {
         res.json({
             success: false,
@@ -33,6 +34,8 @@ app.get('/deleteTodo/:id', (req, res) => {
         .then(data => {
                     res.json(data);
         })
+         .catch(e => {res.json({success: false, error: e})});
+
     } else {
         res.json({
             success: false,
@@ -46,6 +49,7 @@ app.get('/toggle/:id/:state', (req, res) => {
          .then(data => {
         res.json(data);
          })
+            .catch(e => {res.json({success: false, error: e})});
     } else {
         res.json({
             success: false,
